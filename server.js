@@ -11,6 +11,11 @@ let world = new World();
 world.loadWorld(worldData);
 
 const server = http.createServer((req, res) => {
+  const redirect = url => {
+    res.statusCode = 302;
+    res.setHeader('Location', url);
+    return res.end();
+  }
 
   /* ============== ASSEMBLE THE REQUEST BODY AS A STRING =============== */
   let reqBody = '';
@@ -34,6 +39,13 @@ const server = http.createServer((req, res) => {
 
     /* ======================== ROUTE HANDLERS ========================== */
     // Phase 1: GET /
+    if(req.method === 'GET' && req.url === '/') {
+      const resBody = fs.readFileSync('./views/new-player.html', 'utf-8')
+        .replace(/#{availableRooms}/g, world.availableRoomsToString());
+      res.statusCode = 200;
+      res.setHeader("Content-Type", "text/html");
+      return res.end(resBody);
+    }
 
     // Phase 2: POST /player
 
