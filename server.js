@@ -48,6 +48,12 @@ const server = http.createServer((req, res) => {
     }
 
     // Phase 2: POST /player
+    if(req.method === 'POST' && req.url === '/player') {
+      const {roomId, name} = req.body;
+      player = new Player(name, world.rooms[roomId]);
+      return redirect(`/rooms/${player.currentRoom.id}`);
+    }
+    if(!player) return redirect(`/`);
 
     // Phase 3: GET /rooms/:roomId
 
