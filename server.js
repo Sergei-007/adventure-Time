@@ -56,6 +56,27 @@ const server = http.createServer((req, res) => {
     if(!player) return redirect(`/`);
 
     // Phase 3: GET /rooms/:roomId
+    if(req.method === 'GET' && req.url === '/rooms'){
+      const routes = req.url.split('/');
+      const roomId = routes[2];
+      if(routes.length === 3 && roomId) {
+        if(roomId == player.currentRoom.id){
+          const room = player.currentRoom;
+
+          const reqBody = fs.readFileSync('./views/room.html', 'utf-8')
+          .replace(/#{roomName}/g, room.name)
+          .replace(/#{roomId}/g, room.id)
+          .replace(/#{roomItems}/g, room.itemsToString())
+          .replace(/#{inventory}/g, player.inventoryToString())
+          .replace(/#{exits}/g, room.exitsToString());
+
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "text/html");
+          return res.end(reqBody);
+        }
+        else return redirect(`/rooms/${player.currentRoom.id}`);
+      }
+    }
 
     // Phase 4: GET /rooms/:roomId/:direction
 
